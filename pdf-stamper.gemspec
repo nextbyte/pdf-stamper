@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors = ["Paul Schreiber", "Wes Morgan"]
   s.date = %q{2013-01-21}
   s.description = %q{Fill out PDF forms (templates) using iText's PdfStamper.  == CAVEAT:  You have to use JRuby or RJB. You need Adobe LiveCycle Designer or Acrobat Professional to create the templates.  == EXAMPLE: pdf = PDF::Stamper.new("my_template.pdf") pdf.text :first_name, "Jason" pdf.text :last_name, "Yates" pdf.image :photo, "photo.jpg" pdf.checkbox :hungry pdf.save_as "my_output.pdf"}
-  s.email = [paulschreiber@gmail.com wes@turbovote.org]
+  s.email = [paulschreiber@gmail.com, wes@turbovote.org]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "README.txt"]
   s.files = ["History.txt", "Manifest.txt", "README.txt", "Rakefile", "ext/iText-4.2.0.jar", "lib/pdf/stamper.rb", "lib/pdf/stamper/jruby.rb", "lib/pdf/stamper/rjb.rb", "spec/logo.gif", "spec/pdf_stamper_spec.rb", "spec/test_template.pdf"]
   s.homepage = %q{http://github.com/turbovote/pdf-stamper/}
