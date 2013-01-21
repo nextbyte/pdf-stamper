@@ -5,6 +5,9 @@
   15 September 2010 -- fork by Paul Schreiber
   http://github.com/paulschreiber/pdf-stamper/
 
+  21 January 2013 -- fork by Wes Morgan (TurboVote)
+  http://github.com/turbovote/pdf-stamper
+
 == DESCRIPTION:
 
 Fill out PDF forms (templates) using iText's PdfStamper.
@@ -27,17 +30,17 @@ pdf.save_as "my_output.pdf"
 
 == INSTALL:
 
-$ sudo gem install ps-pdf-stamper
+$ sudo gem install tv-pdf-stamper
 
 == CODE:
 
-$ git clone http://github.com/paulschreiber/pdf-stamper/
+$ git clone http://github.com/turbovote/pdf-stamper/
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright 2007-2010 Jason Yates, Paul Schreiber
+Copyright 2007-2013 Jason Yates, Paul Schreiber, Wes Morgan
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
