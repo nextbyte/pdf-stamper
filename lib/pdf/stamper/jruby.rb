@@ -4,6 +4,9 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', '..', '..', 'ext'))
 require 'java'
+
+java.lang.System.setProperty('java.awt.headless', 'true')
+
 require 'iText-4.2.0.jar'
 
 java_import 'java.io.FileOutputStream'
@@ -20,7 +23,7 @@ module PDF
     def initialize(pdf = nil)
       template(pdf) if ! pdf.nil?
     end
-  
+
     def template(template)
       # NOTE I'd rather use a ByteArrayOutputStream.  However I
       # couldn't get it working.  Patches welcome.
@@ -36,10 +39,10 @@ module PDF
     def is_checkbox(field_type)
       field_type == AcroFields::FIELD_TYPE_CHECKBOX
     end
-  
+
     # Set a button field defined by key and replaces with an image.
     def image(key, image_path)
-      # Idea from here http://itext.ugent.be/library/question.php?id=31 
+      # Idea from here http://itext.ugent.be/library/question.php?id=31
       # Thanks Bruno for letting me know about it.
       img = Image.getInstance(image_path)
       img_field = @form.getFieldPositions(key.to_s)
@@ -54,7 +57,7 @@ module PDF
       cb = @stamp.getOverContent(img_field[0].to_i)
       cb.addImage(img)
     end
-    
+
     # Takes the PDF output and sends as a string.  Basically it's sole
     # purpose is to be used with send_data in rails.
     def to_s
