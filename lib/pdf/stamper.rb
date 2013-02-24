@@ -75,8 +75,8 @@ module PDF
     end
 
     # Saves the PDF into a file defined by path given.
-    def save_as(file)
-      File.open(file, "wb") { |f| f.write to_s }
+    def save_as(file, flatten_form=true)
+      File.open(file, "wb") { |f| f.write to_s(flatten_form) }
     end
 
     private
@@ -85,11 +85,11 @@ module PDF
       @canvas_list[page] = @stamp.getOverContent(page) unless @canvas_list.has_key?(page)
     end
 
-    def fill
+    def fill(flatten_form=true)
       @canvas_list.values.each do |c|
         c.stroke
       end
-      @stamp.setFormFlattening(true)
+      @stamp.setFormFlattening(flatten_form)
       @stamp.close
     end
   end
