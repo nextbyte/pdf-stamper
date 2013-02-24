@@ -10,8 +10,6 @@ include FileUtils
 
 module PDF
   class Stamper
-    VERSION = "0.3.6"
-    
     if RUBY_PLATFORM =~ /java/ # ifdef to check if your using JRuby
       require 'pdf/stamper/jruby'
     else
@@ -35,7 +33,7 @@ module PDF
     # pdf.image :photo, "photo.jpg"
     # pdf.checkbox :hungry
     # pdf.save_as "my_output"
-    
+
     # Set a textfield defined by key and text to value.
     def text(key, value)
       @form.setField(key.to_s, value.to_s) # Value must be a string or itext will error.
@@ -48,11 +46,11 @@ module PDF
 
       all_states = @form.getAppearanceStates(key.to_s)
       yes_state = all_states.reject{|x| x == "Off"}
-      
-      
+
+
       @form.setField(key.to_s, yes_state.first) unless (yes_state.size == 0)
     end
-    
+
     # Get checkbox values
     def get_checkbox_values(key)
       field_type = @form.getFieldType(key.to_s)
@@ -75,14 +73,14 @@ module PDF
       update_canvas_list(page)
       @canvas_list[page].rectangle(x, y, width, height)
     end
-    
+
     # Saves the PDF into a file defined by path given.
     def save_as(file)
       File.open(file, "wb") { |f| f.write to_s }
     end
-    
+
     private
-    
+
     def update_canvas_list(page)
       @canvas_list[page] = @stamp.getOverContent(page) unless @canvas_list.has_key?(page)
     end
@@ -96,4 +94,3 @@ module PDF
     end
   end
 end
-    
