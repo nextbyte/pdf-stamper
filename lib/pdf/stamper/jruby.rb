@@ -25,12 +25,10 @@ module PDF
     end
 
     def template(template)
-      # NOTE I'd rather use a ByteArrayOutputStream.  However I
-      # couldn't get it working.  Patches welcome.
       #@tmp_path = File.join(Dir::tmpdir, 'pdf-stamper-' + rand(10000).to_s + '.pdf')
       reader = PdfReader.new(template)
       @baos = ByteArrayOutputStream.new
-      @stamp = PdfStamper.new(reader, @baos)#FileOutputStream.new(@tmp_path))
+      @stamp = PdfStamper.new(reader, @baos)
       @form = @stamp.getAcroFields()
       @black = GrayColor.new(0.0)
       @canvas_list = { 1 => @stamp.getOverContent(1) }
