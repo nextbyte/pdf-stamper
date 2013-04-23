@@ -70,8 +70,8 @@ module PDF
     
     # Takes the PDF output and sends as a string.  Basically its sole
     # purpose is to be used with send_data in rails.
-    def to_s
-      fill
+    def to_s(flatten_form=true)
+      fill(flatten_form)
       @baos.toByteArray
     end
     
