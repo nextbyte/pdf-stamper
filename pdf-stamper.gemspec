@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 2
 
+    s.add_dependency "rjb-loader"
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<newgem>, [">= 1.2.3"])
       s.add_development_dependency(%q<hoe>, [">= 1.8.0"])

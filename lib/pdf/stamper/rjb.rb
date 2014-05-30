@@ -5,7 +5,12 @@
 require 'rubygems'
 require 'rjb'
 
-Rjb::load(File.join(File.dirname(__FILE__), '..', '..', '..', 'ext', 'iText-4.2.0.jar'), ['-Djava.awt.headless=true'])
+RjbLoader.before_load do |config|
+  # This code changes the JVM classpath, so it has to run BEFORE loading Rjb.
+  Dir[File.join(File.dirname(__FILE__), '..', '..', '..', 'ext', '*.jar')].each do |path|
+    config.classpath << File::PATH_SEPARATOR + File.expand_path(path)
+  end
+end
 
 module PDF
   # PDF::Stamper::RJB
