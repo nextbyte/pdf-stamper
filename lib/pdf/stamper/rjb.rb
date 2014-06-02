@@ -24,17 +24,17 @@ module PDF
   # Check the RJB documentation if you are having issues with this.
   class Stamper
     def initialize(pdf = nil, options = {})
-      @bytearray    = Rjb::import('java.io.ByteArrayOutputStream')
-      @filestream   = Rjb::import('java.io.FileOutputStream')
-      @acrofields   = Rjb::import('com.lowagie.text.pdf.AcroFields')
-      @pdfreader    = Rjb::import('com.lowagie.text.pdf.PdfReader')
-      @pdfstamper   = Rjb::import('com.lowagie.text.pdf.PdfStamper')
-      @pdfwriter    = Rjb::import('com.lowagie.text.pdf.PdfWriter')
-      @image_class  = Rjb::import('com.lowagie.text.Image')
-      @pdf_content_byte_class = Rjb::import('com.lowagie.text.pdf.PdfContentByte')
-      @basefont_class = Rjb::import('com.lowagie.text.pdf.BaseFont')
-      @rectangle = Rjb::import('com.lowagie.text.Rectangle')
-      @gray_color = Rjb::import('com.lowagie.text.pdf.GrayColor')
+      # @bytearray    = BYTEARRAY
+      # @filestream   = FILESTREAM
+      # @acrofields   = ACROFIELDS
+      # @pdfreader    = PDFREADER
+      # @pdfstamper   = PDFSTAMPER
+      # @pdfwriter    = PDFWRITER
+      # @image_class  = IMAGE_CLASS
+      # @pdf_content_byte_class = PDF_CONTENT_BYTE_CLASS
+      # @basefont_class = BASEFONT_CLASS
+      # @rectangle = RECTANGLE
+      # @gray_color = GRAY_COLOR
     
       template(pdf) if ! pdf.nil?
     end
@@ -44,13 +44,13 @@ module PDF
     end
   
     def template(template)
-      reader = @pdfreader.new(template)
+      reader = PDFREADER.new(template)
       @pagesize = reader.getPageSize(1)
       @numpages = reader.getNumberOfPages()
-      @baos = @bytearray.new
-      @stamp = @pdfstamper.new(reader, @baos)
+      @baos = BYTEARRAY.new
+      @stamp = PDFSTAMPER.new(reader, @baos)
       @form = @stamp.getAcroFields()
-      @black = @gray_color.new(0.0)
+      @black = GRAY_COLOR.new(0.0)
       @canvas_list = { 1 => @stamp.getOverContent(1) }
     end
 
@@ -58,11 +58,11 @@ module PDF
     def image(key, image_path)
       # Idea from here http://itext.ugent.be/library/question.php?id=31 
       # Thanks Bruno for letting me know about it.
-      img = @image_class.getInstance(image_path)
+      img = IMAGE_CLASS.getInstance(image_path)
       img_field = @form.getFieldPositions(key.to_s)
 
       
-      rect = @rectangle.new(img_field[1], img_field[2], img_field[3], img_field[4])
+      rect = RECTANGLE.new(img_field[1], img_field[2], img_field[3], img_field[4])
       img.scaleToFit(rect.width, rect.height)
       img.setAbsolutePosition(
         img_field[1] + (rect.width - img.getScaledWidth) / 2,
@@ -81,7 +81,7 @@ module PDF
     end
     
     def add_images(images)
-      basefont = @basefont_class.createFont(@basefont_class.HELVETICA, @basefont_class.CP1252, @basefont_class.NOT_EMBEDDED)
+      basefont = BASEFONT_CLASS.createFont(@basefont_class.HELVETICA, @basefont_class.CP1252, @basefont_class.NOT_EMBEDDED)
       image_size = []
       half_page_width = @pagesize.width() / 2
       half_page_height = @pagesize.height() / 2
@@ -97,7 +97,7 @@ module PDF
         4.times do |n|
           if pdf_image = images[image_index + n]
             if image_path = pdf_image[0]
-              img = @image_class.getInstance(image_path)
+              img = IMAGE_CLASS.getInstance(image_path)
               img.scaleToFit(image_size[0] + 30, (image_size[1]))
               img_x_offset = (half_page_width - image_size[0]) / 2
               img_y_offset = (half_page_height - img.getScaledHeight()) / 2
@@ -115,7 +115,7 @@ module PDF
             end
             if image_label = pdf_image[1]
               over.beginText()
-              over.showTextAligned(@pdf_content_byte_class.ALIGN_CENTER, image_label, (img.getAbsoluteX() + ((image_size[0] + 30) / 2)), (img.getAbsoluteY() - 15), 0)
+              over.showTextAligned(PDF_CONTENT_BYTE_CLASS.ALIGN_CENTER, image_label, (img.getAbsoluteX() + ((image_size[0] + 30) / 2)), (img.getAbsoluteY() - 15), 0)
               over.endText()
             end
           end
@@ -126,7 +126,7 @@ module PDF
     
     def add_image_on_page(page, x, y, url)
       over = @stamp.getOverContent(page)
-      img = @image_class.getInstance(url)
+      img = IMAGE_CLASS.getInstance(url)
       img.setAbsolutePosition(x,y)
       img.scaleToFit(200,70)
       over.addImage(img)
