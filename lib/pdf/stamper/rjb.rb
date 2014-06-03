@@ -4,12 +4,28 @@
 
 require 'rubygems'
 require 'rjb'
+require 'rjb-loader'
 
 RjbLoader.before_load do |config|
   # This code changes the JVM classpath, so it has to run BEFORE loading Rjb.
   Dir[File.join(File.dirname(__FILE__), '..', '..', '..', 'ext', '*.jar')].each do |path|
     config.classpath << File::PATH_SEPARATOR + File.expand_path(path)
   end
+end
+
+RjbLoader.after_load do
+  BARCODE39 = Rjb::import('com.lowagie.text.pdf.Barcode39')
+  BYTEARRAY = Rjb::import('java.io.ByteArrayOutputStream')
+  FILESTREAM = Rjb::import('java.io.FileOutputStream')
+  ACROFIELDS = Rjb::import('com.lowagie.text.pdf.AcroFields')
+  PDFREADER = Rjb::import('com.lowagie.text.pdf.PdfReader')
+  PDFSTAMPER = Rjb::import('com.lowagie.text.pdf.PdfStamper')
+  PDFWRITER = Rjb::import('com.lowagie.text.pdf.PdfWriter')
+  IMAGE_CLASS = Rjb::import('com.lowagie.text.Image')
+  PDF_CONTENT_BYTE_CLASS = Rjb::import('com.lowagie.text.pdf.PdfContentByte')
+  BASEFONT_CLASS = Rjb::import('com.lowagie.text.pdf.BaseFont')
+  RECTANGLE = Rjb::import('com.lowagie.text.Rectangle')
+  GRAY_COLOR = Rjb::import('com.lowagie.text.pdf.GrayColor')
 end
 
 module PDF
@@ -35,14 +51,14 @@ module PDF
       # @basefont_class = BASEFONT_CLASS
       # @rectangle = RECTANGLE
       # @gray_color = GRAY_COLOR
-    
-      template(pdf) if ! pdf.nil?
+
+      template(pdf) if !pdf.nil?
     end
-    
+
     def is_checkbox(field_type)
       field_type == @acrofields.FIELD_TYPE_CHECKBOX
     end
-  
+
     def template(template)
       reader = PDFREADER.new(template)
       @pagesize = reader.getPageSize(1)
@@ -51,7 +67,7 @@ module PDF
       @stamp = PDFSTAMPER.new(reader, @baos)
       @form = @stamp.getAcroFields()
       @black = GRAY_COLOR.new(0.0)
-      @canvas_list = { 1 => @stamp.getOverContent(1) }
+      @canvas_list = {1 => @stamp.getOverContent(1)}
     end
 
     # Set a button field defined by key and replaces with an image.
@@ -61,25 +77,25 @@ module PDF
       img = IMAGE_CLASS.getInstance(image_path)
       img_field = @form.getFieldPositions(key.to_s)
 
-      
+
       rect = RECTANGLE.new(img_field[1], img_field[2], img_field[3], img_field[4])
       img.scaleToFit(rect.width, rect.height)
       img.setAbsolutePosition(
-        img_field[1] + (rect.width - img.getScaledWidth) / 2,
-        img_field[2] + (rect.height - img.getScaledHeight) /2
+          img_field[1] + (rect.width - img.getScaledWidth) / 2,
+          img_field[2] + (rect.height - img.getScaledHeight) /2
       )
 
       cb = @stamp.getOverContent(img_field[0].to_i)
       cb.addImage(img)
     end
-    
+
     # Takes the PDF output and sends as a string.  Basically its sole
     # purpose is to be used with send_data in rails.
     def to_s(flatten_form=true)
       fill(flatten_form)
       @baos.toByteArray
     end
-    
+
     def add_images(images)
       basefont = BASEFONT_CLASS.createFont(@basefont_class.HELVETICA, @basefont_class.CP1252, @basefont_class.NOT_EMBEDDED)
       image_size = []
@@ -102,14 +118,14 @@ module PDF
               img_x_offset = (half_page_width - image_size[0]) / 2
               img_y_offset = (half_page_height - img.getScaledHeight()) / 2
               case n
-              when 0
-                img.setAbsolutePosition(img_x_offset, (half_page_height + img_y_offset))
-              when 1
-                img.setAbsolutePosition((half_page_width + (img_x_offset - 30)), (half_page_height + img_y_offset))
-              when 2
-                img.setAbsolutePosition(img_x_offset, img_y_offset)
-              when 3
-                img.setAbsolutePosition((half_page_width + (img_x_offset - 30)), img_y_offset)
+                when 0
+                  img.setAbsolutePosition(img_x_offset, (half_page_height + img_y_offset))
+                when 1
+                  img.setAbsolutePosition((half_page_width + (img_x_offset - 30)), (half_page_height + img_y_offset))
+                when 2
+                  img.setAbsolutePosition(img_x_offset, img_y_offset)
+                when 3
+                  img.setAbsolutePosition((half_page_width + (img_x_offset - 30)), img_y_offset)
               end
               over.addImage(img)
             end
@@ -123,12 +139,12 @@ module PDF
       end
       @stamp.setFullCompression()
     end
-    
+
     def add_image_on_page(page, x, y, url)
       over = @stamp.getOverContent(page)
       img = IMAGE_CLASS.getInstance(url)
-      img.setAbsolutePosition(x,y)
-      img.scaleToFit(200,70)
+      img.setAbsolutePosition(x, y)
+      img.scaleToFit(200, 70)
       over.addImage(img)
     end
   end
