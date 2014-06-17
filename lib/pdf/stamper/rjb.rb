@@ -14,18 +14,18 @@ RjbLoader.before_load do |config|
 end
 
 RjbLoader.after_load do
-  BARCODE39 = Rjb::import('com.lowagie.text.pdf.Barcode39')
+  BARCODE39 = Rjb::import('com.itextpdf.text.pdf.Barcode39')
   BYTEARRAY = Rjb::import('java.io.ByteArrayOutputStream')
   FILESTREAM = Rjb::import('java.io.FileOutputStream')
-  ACROFIELDS = Rjb::import('com.lowagie.text.pdf.AcroFields')
-  PDFREADER = Rjb::import('com.lowagie.text.pdf.PdfReader')
-  PDFSTAMPER = Rjb::import('com.lowagie.text.pdf.PdfStamper')
-  PDFWRITER = Rjb::import('com.lowagie.text.pdf.PdfWriter')
-  IMAGE_CLASS = Rjb::import('com.lowagie.text.Image')
-  PDF_CONTENT_BYTE_CLASS = Rjb::import('com.lowagie.text.pdf.PdfContentByte')
-  BASEFONT_CLASS = Rjb::import('com.lowagie.text.pdf.BaseFont')
-  RECTANGLE = Rjb::import('com.lowagie.text.Rectangle')
-  GRAY_COLOR = Rjb::import('com.lowagie.text.pdf.GrayColor')
+  ACROFIELDS = Rjb::import('com.itextpdf.text.pdf.AcroFields')
+  PDFREADER = Rjb::import('com.itextpdf.text.pdf.PdfReader')
+  PDFSTAMPER = Rjb::import('com.itextpdf.text.pdf.PdfStamper')
+  PDFWRITER = Rjb::import('com.itextpdf.text.pdf.PdfWriter')
+  IMAGE_CLASS = Rjb::import('com.itextpdf.text.Image')
+  PDF_CONTENT_BYTE_CLASS = Rjb::import('com.itextpdf.text.pdf.PdfContentByte')
+  BASEFONT_CLASS = Rjb::import('com.itextpdf.text.pdf.BaseFont')
+  RECTANGLE = Rjb::import('com.itextpdf.text.Rectangle')
+  GRAY_COLOR = Rjb::import('com.itextpdf.text.pdf.GrayColor')
 end
 
 module PDF
@@ -39,6 +39,8 @@ module PDF
   #
   # Check the RJB documentation if you are having issues with this.
   class Stamper
+    attr_accessor :init_ok
+
     def initialize(pdf = nil, options = {})
       # @bytearray    = BYTEARRAY
       # @filestream   = FILESTREAM
@@ -60,7 +62,29 @@ module PDF
     end
 
     def template(template)
-      reader = PDFREADER.new(template)
+      @file_input_stream = Rjb::import('java.io.FileInputStream')
+      @file = Rjb::import('java.io.File')
+      _is = @file_input_stream.new(@file.new(template))
+      # Rails.logger.info is.available().to_s
+      # Rails.logger.info @file.new(template).isFile().to_s
+      # reader = PDFREADER.new(template)
+      begin
+        # reader = PDFREADER.new(Rjb::import('org.apache.commons.io.IOUtils').toByteArray(_is))
+        reader = PDFREADER.new(template)
+      rescue
+        Rails.logger.info 'Error reading file'
+        @init_ok = false
+        return
+        # data = File.read(template)
+        # Rails.logger.info data.size
+        # # byte = Rjb::import('java.lang.byte').new(data.size)
+        # # _bs = BYTEARRAY.new
+        # # 0.upto(data.size - 1) {|i| _bs.write(data[i])}
+        # _string = Rjb::import('java.lang.String').new(data)
+        # Rails.logger.info _string.length()
+        # # reader = PDFREADER.new(Rjb::import('com.itextpdf.text.io.RandomAccessSourceFactory').new.createSource(_string.getBytes()))# rescue 'Error reading file 2'
+        # reader = PDFREADER.new(Rjb::import('java.io.StringReader').new(data))
+      end
       @pagesize = reader.getPageSize(1)
       @numpages = reader.getNumberOfPages()
       @baos = BYTEARRAY.new
@@ -68,6 +92,8 @@ module PDF
       @form = @stamp.getAcroFields()
       @black = GRAY_COLOR.new(0.0)
       @canvas_list = {1 => @stamp.getOverContent(1)}
+
+      @init_ok = true
     end
 
     # Set a button field defined by key and replaces with an image.
